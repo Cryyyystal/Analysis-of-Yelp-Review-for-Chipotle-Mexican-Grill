@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[78]:
+# In[1]:
 
 
 import json
@@ -27,13 +27,13 @@ nltk.download('stopwords')
 
 # # EDA
 
-# In[26]:
+# In[2]:
 
 
 Chipotle = read_csv('Chipotle.csv')
 
 
-# In[27]:
+# In[3]:
 
 
 #separate date and time
@@ -42,20 +42,20 @@ Chipotle['date']= Chipotle['date'].apply(lambda x: x.split()[0])
 Chipotle['date'] = pd.to_datetime(Chipotle['date'])
 
 
-# In[28]:
+# In[4]:
 
 
 Chipotle.head()
 
 
-# In[29]:
+# In[5]:
 
 
 print("Number of Stores of Chipotle Mexican Grill: ",len(Chipotle["business_id"].value_counts()))
 print("Number of Reviews of Chipotle Mexican Grill: ",len(Chipotle))
 
 
-# In[32]:
+# In[6]:
 
 
 fig= plt.figure(figsize = (12,4))
@@ -66,7 +66,7 @@ plt.ylabel("Num of Reviews")
 plt.xticks([])
 
 
-# In[35]:
+# In[7]:
 
 
 largest_store = Chipotle[Chipotle["business_id"] =="gOBxVkHpqtjRRxHBIrpnMA"]
@@ -78,7 +78,7 @@ plt.title('Number of Review Change across time of the largest store')
 plt.xticks(rotation = 90)
 
 
-# In[36]:
+# In[8]:
 
 
 month = list(pd.DatetimeIndex(Chipotle['date']).month)
@@ -90,7 +90,7 @@ plt.xlabel('Month')
 plt.xticks(rotation = 90)
 
 
-# In[41]:
+# In[9]:
 
 
 fig= plt.figure(figsize = (12,4))
@@ -100,7 +100,7 @@ plt.xlabel('States')
 plt.xticks(rotation = 90)
 
 
-# In[61]:
+# In[10]:
 
 
 main_cities = list(Chipotle["city"].value_counts().index[0:30])
@@ -115,13 +115,13 @@ plt.xticks(rotation = 90)
 
 # # Text Preprocessing
 
-# In[62]:
+# In[11]:
 
 
 Chipotle['text'][0]
 
 
-# In[63]:
+# In[12]:
 
 
 #decontraction
@@ -147,7 +147,7 @@ def decontracted(phrase):
     return phrase
 
 
-# In[64]:
+# In[13]:
 
 
 # return to words
@@ -166,7 +166,7 @@ Chipotle['review'] = Chipotle['review'].apply(lambda x: rm_punc.sub(' ', x))
 Chipotle['review'] = Chipotle['review'].apply(lambda x: shrink_spaces.sub(' ', x))
 
 
-# In[65]:
+# In[14]:
 
 
 # # handle negation
@@ -176,7 +176,7 @@ Chipotle['review'] = Chipotle['review'].apply(lambda x: shrink_spaces.sub(' ', x
 # df['text'] = df['text'].apply(lambda x: handle_not.sub(r'not_', x))
 
 
-# In[69]:
+# In[15]:
 
 
 nltk.download('wordnet')
@@ -189,7 +189,7 @@ lemmatizer = WordNetLemmatizer()
 Chipotle['review'] = Chipotle['review'].apply(lambda x: " ".join([lemmatizer.lemmatize(word) for word in x.split()]))
 
 
-# In[70]:
+# In[16]:
 
 
 Chipotle['review'].iloc[0]
@@ -197,7 +197,7 @@ Chipotle['review'].iloc[0]
 
 # # Sentiment Analysis
 
-# In[71]:
+# In[17]:
 
 
 def sentiment(x):
@@ -205,19 +205,19 @@ def sentiment(x):
     return sentiment.sentiment.polarity
 
 
-# In[72]:
+# In[18]:
 
 
 Chipotle['sentiment_socre'] = Chipotle['review'].apply(sentiment)
 
 
-# In[73]:
+# In[19]:
 
 
 Chipotle.head()
 
 
-# In[74]:
+# In[20]:
 
 
 Chipotle['sentiment'] = ''
@@ -225,7 +225,7 @@ Chipotle['sentiment'][Chipotle['sentiment_socre'] > 0] = 'positive'
 Chipotle['sentiment'][Chipotle['sentiment_socre'] <= 0] = 'negative'
 
 
-# In[76]:
+# In[21]:
 
 
 plt.figure(figsize=(6,3))
@@ -235,7 +235,7 @@ plt.title('Review Sentiments')
 
 # ### Collect Reviews and Count Words
 
-# In[65]:
+# In[22]:
 
 
 review_list_ch = Chipotle['review'].tolist()
@@ -251,7 +251,7 @@ for letter, count in counted_words.most_common(50):
 
 # ### Calculate Word Occurence Ratio in Positive / Negative Reviews
 
-# In[66]:
+# In[23]:
 
 
 pcount = []
@@ -261,14 +261,14 @@ for word in words:
     ncount.append(sum(Chipotle[Chipotle['sentiment'] == "negative"]["text"].str.contains(word)))
 
 
-# In[67]:
+# In[24]:
 
 
 pcount_normalized = np.asarray(pcount)/Chipotle.loc[Chipotle['sentiment'] == "positive"].shape[0]
 ncount_normalized = np.asarray(ncount)/Chipotle.loc[Chipotle['sentiment'] == "negative"].shape[0]
 
 
-# In[68]:
+# In[25]:
 
 
 word_pos_neg_cnt_df = pd.DataFrame({'positive ratio': pcount_normalized, 'negative ratio': ncount_normalized}, index=words)
@@ -281,33 +281,27 @@ word_pos_neg_cnt_df.head()
 
 # ### Take Stars vs Date
 
-# In[69]:
+# In[26]:
 
 
-df_ch_star = Chipotle[['stars', 'date']]
+df_ch_star = Chipotle[['stars_y', 'date']]
 df_ch_star.head()
 
 
 # ### Convert to Monthly Change
 
-# In[71]:
+# In[27]:
 
 
-ch_star_monthly_change = df_ch_star.set_index('date').resample('M').stars.mean()
+ch_star_monthly_change = df_ch_star.set_index('date').resample('M').stars_y.mean()
 ch_star_monthly_change = ch_star_monthly_change.dropna()
 ch_star_monthly_change.head()
 # df_ch.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
 
 
-# In[25]:
-
-
-df_ch.shape[0]
-
-
 # ### Stars vs Month
 
-# In[27]:
+# In[28]:
 
 
 fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -318,36 +312,36 @@ ch_star_monthly_change.plot.line(label='Stars', ax=ax, rot=0, figsize=(10, 5), t
 
 # ### Total positive / negative reviews per month
 
-# In[28]:
-
-
-# monthly total positive rows
-df_ch_pos_cnt = df_ch.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
-df_ch_neg_cnt = df_ch.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
-print(df_ch_pos_cnt.head())
-print()
-print(df_ch_neg_cnt.head())
-
-
 # In[29]:
 
 
-fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-df_ch_pos_cnt.plot.line(label='Number of Positive Reviews', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Number of Positive Reviews over Time (avg per month)", style='-')
+# monthly total positive rows
+Chipotle_pos_cnt = Chipotle.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
+Chipotle_neg_cnt = Chipotle.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
+print(Chipotle_pos_cnt.head())
+print()
+print(Chipotle_neg_cnt.head())
 
 
 # In[30]:
 
 
 fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-df_ch_neg_cnt.plot.line(label='Number of Negative Reviews', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Number of Negative Reviews over Time (avg per month)", style='-')
+Chipotle_pos_cnt.plot.line(label='Number of Positive Reviews', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Number of Positive Reviews over Time (avg per month)", style='-')
+
+
+# In[31]:
+
+
+fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+Chipotle_neg_cnt.plot.line(label='Number of Negative Reviews', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Number of Negative Reviews over Time (avg per month)", style='-')
 
 
 # ## Occurence of top frequent word in positive / negative reviews per month: step by step
 
 # ### Pick a word as example
 
-# In[31]:
+# In[32]:
 
 
 # current woi (word of interest)
@@ -357,47 +351,47 @@ words[idx]
 
 # ### All reviews containing keyword
 
-# In[32]:
+# In[33]:
 
 
 woi = words[1]
-df_ch_woi = df_ch.loc[df_ch['text'].str.contains(woi)]
-df_ch_woi.head()
+Chipotle_woi = Chipotle.loc[Chipotle['text'].str.contains(woi)]
+Chipotle_woi.head()
 
 
 # ### Positive / negative reviews containing keyword
 
-# In[33]:
+# In[34]:
 
 
-df_ch_woi_pos_cnt = df_ch_woi.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
-df_ch_woi_neg_cnt = df_ch_woi.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
-print(df_ch_woi_pos_cnt.head())
+Chipotle_woi_pos_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
+Chipotle_woi_neg_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
+print(Chipotle_woi_pos_cnt.head())
 print()
-print(df_ch_woi_neg_cnt.head())
+print(Chipotle_woi_neg_cnt.head())
 
 
 # ### Occurence ratio in positive reviews and plot
 
-# In[34]:
+# In[35]:
 
 
-df_ch_woi_pos_ratio = df_ch_woi_pos_cnt.divide(df_ch_pos_cnt, fill_value=0.0)
-df_ch_woi_pos_ratio.plot.line(rot=0, figsize=(10, 5), title="Monthly occurence of {} in positive reviews".format(woi))
+Chipotle_woi_pos_ratio = Chipotle_woi_pos_cnt.divide(Chipotle_pos_cnt, fill_value=0.0)
+Chipotle_woi_pos_ratio.plot.line(rot=0, figsize=(10, 5), title="Monthly occurence of {} in positive reviews".format(woi))
 
 
 # #### Occurence ratio in negative reviews and plot
 
-# In[35]:
+# In[36]:
 
 
-df_ch_woi_neg_ratio = df_ch_woi_neg_cnt.divide(df_ch_neg_cnt, fill_value=0.0)
-df_ch_woi_neg_ratio.plot.line(rot=0, figsize=(10, 5), title="Monthly occurence of {} in negative reviews".format(woi))
+Chipotle_woi_neg_ratio = Chipotle_woi_neg_cnt.divide(Chipotle_neg_cnt, fill_value=0.0)
+Chipotle_woi_neg_ratio.plot.line(rot=0, figsize=(10, 5), title="Monthly occurence of {} in negative reviews".format(woi))
 
 
 # # Examine All Frequent Words
 
-# In[36]:
+# In[37]:
 
 
 def GetStarsInDateRange(x, start, end, colname):
@@ -405,51 +399,69 @@ def GetStarsInDateRange(x, start, end, colname):
     return x_df.loc[(x_df['date'] >= start) & (x_df['date'] <= end)].set_index('date')[colname]
 
 
-# In[37]:
+# In[38]:
 
 
-start_date = '2010-01-01'
+start_date = '2012-01-01'
 end_date = '2018-12-31'
 
 for woi in words:
-    df_ch_woi = df_ch.loc[df_ch['text'].str.contains(woi)]
-    df_ch_woi.head()
-    df_ch_woi_pos_cnt = df_ch_woi.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
-    df_ch_woi_neg_cnt = df_ch_woi.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
+    Chipotle_woi = Chipotle.loc[Chipotle['text'].str.contains(woi)]
+    Chipotle_woi.head()
+    Chipotle_woi_pos_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
+    Chipotle_woi_neg_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    stars_plot = GetStarsInDateRange(ch_star_monthly_change, start_date, end_date, 'stars')
+    stars_plot = GetStarsInDateRange(ch_star_monthly_change, start_date, end_date, 'stars_y')
     stars_plot.plot.line(label='Stars', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Avg Stars over Time (avg per month)", style='-')
     ax_r = ax.twinx()
 
-    df_ch_woi_pos_ratio = df_ch_woi_pos_cnt.divide(df_ch_pos_cnt, fill_value=0.0)
-    df_ch_woi_pos_ratio = df_ch_woi_pos_ratio.dropna()
-    woi_pos_ratio_plot = GetStarsInDateRange(df_ch_woi_pos_ratio, start_date, end_date, 'sentiment')
+    Chipotle_woi_pos_ratio = Chipotle_woi_pos_cnt.divide(Chipotle_pos_cnt, fill_value=0.0)
+    Chipotle_woi_pos_ratio = Chipotle_woi_pos_ratio.dropna()
+    woi_pos_ratio_plot = GetStarsInDateRange(Chipotle_woi_pos_ratio, start_date, end_date, 'sentiment')
     woi_pos_ratio_plot.plot.line(label='{} in positive'.format(woi), ax=ax_r, rot=0, style='g--')
 
-    df_ch_woi_neg_ratio = df_ch_woi_neg_cnt.divide(df_ch_neg_cnt, fill_value=0.0)
-    df_ch_woi_neg_ratio = df_ch_woi_neg_ratio.dropna()
-    woi_neg_ratio_plot = GetStarsInDateRange(df_ch_woi_neg_ratio, start_date, end_date, 'sentiment')
+    Chipotle_woi_neg_ratio = Chipotle_woi_neg_cnt.divide(Chipotle_neg_cnt, fill_value=0.0)
+    Chipotle_woi_neg_ratio = Chipotle_woi_neg_ratio.dropna()
+    woi_neg_ratio_plot = GetStarsInDateRange(Chipotle_woi_neg_ratio, start_date, end_date, 'sentiment')
     woi_neg_ratio_plot.plot.line(label='{} in negative'.format(woi), ax=ax_r, rot=0, style='r--')
 
     fig.legend()
 
 
-# In[38]:
+# In[39]:
 
 
 words
 
 
-# In[39]:
+# In[ ]:
 
 
-df_ch_woi_pos_cnt
+start_date = '2012-01-01'
+end_date = '2018-12-31'
+
+woi = "burrito"
+Chipotle_woi = Chipotle.loc[Chipotle['text'].str.contains(woi)]
+Chipotle_woi.head()
+Chipotle_woi_pos_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('positive').resample('M').count().sentiment
+Chipotle_woi_neg_cnt = Chipotle_woi.set_index('date').groupby('sentiment').get_group('negative').resample('M').count().sentiment
+
+fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+stars_plot = GetStarsInDateRange(ch_star_monthly_change, start_date, end_date, 'stars_y')
+stars_plot.plot.line(label='Stars', ax=ax, rot=0, figsize=(10, 5), title="Chipotle Avg Stars over Time (avg per month)", style='-')
+ax_r = ax.twinx()
+
+Chipotle_woi_pos_ratio = Chipotle_woi_pos_cnt.divide(Chipotle_pos_cnt, fill_value=0.0)
+Chipotle_woi_pos_ratio = Chipotle_woi_pos_ratio.dropna()
+woi_pos_ratio_plot = GetStarsInDateRange(Chipotle_woi_pos_ratio, start_date, end_date, 'sentiment')
+woi_pos_ratio_plot.plot.line(label='{} in positive'.format(woi), ax=ax_r, rot=0, style='g--')
+fig.legend()
 
 
 # # Topic Modeling
 
-# In[79]:
+# In[ ]:
 
 
 # tokenize each sentence into a list of words, removing punctuations
@@ -468,7 +480,7 @@ wnl = stem.WordNetLemmatizer()
 data_words = [[wnl.lemmatize(word) for word in sentence] for sentence in data_words]
 
 
-# In[80]:
+# In[ ]:
 
 
 #create bag-of-words for each narrative
@@ -485,7 +497,7 @@ trigram_mod = gensim.models.phrases.Phraser(trigram)
 print(bigram_mod[data_words[0]])
 
 
-# In[81]:
+# In[ ]:
 
 
 # Define functions for stopwords, bigrams, trigrams and lemmatization
@@ -507,7 +519,7 @@ def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     return texts_out
 
 
-# In[84]:
+# In[ ]:
 
 
 # Remove Stop Words
@@ -525,7 +537,7 @@ data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'AD
 print(data_lemmatized[:1])
 
 
-# In[85]:
+# In[ ]:
 
 
 # Create Dictionary
@@ -543,7 +555,7 @@ corpus = [id2word.doc2bow(text) for text in texts]
 
 # ## find the optimal number of topics for LDA
 
-# In[109]:
+# In[ ]:
 
 
 def compute_coherence_values(dictionary, corpus, texts, limit, start=2, step=2):
@@ -626,7 +638,7 @@ mallet_path = 'mallet-2.0.8/bin/mallet' # update this path
 model_list, coherence_values = compute_coherence_values(dictionary=id2word, corpus=corpus, texts=data_lemmatized, start=2, limit=10, step=1)
 
 
-# In[110]:
+# In[ ]:
 
 
 # Can take a long time to run.
@@ -634,7 +646,7 @@ mallet_path = 'mallet-2.0.8/bin/mallet' # update this path
 model_list, coherence_values = compute_coherence_values(dictionary=id2word, corpus=corpus, texts=data_lemmatized, start=2, limit=10, step=1)
 
 
-# In[111]:
+# In[ ]:
 
 
 # Show graph
@@ -647,7 +659,7 @@ plt.legend(("coherence_values"), loc='best')
 plt.show()
 
 
-# In[112]:
+# In[ ]:
 
 
 for m, cv in zip(x, coherence_values):
@@ -656,7 +668,7 @@ for m, cv in zip(x, coherence_values):
 
 # ## Finding topics Using LDA model
 
-# In[121]:
+# In[ ]:
 
 
 # Build LDA model
@@ -687,7 +699,7 @@ print('\nCoherence Score: ', coherence_lda)
 # - Explanation for Perplexity:Perplexity is a measurement of how well a probability model predicts a test data.
 # - Low perplexity is good and high perplexity is bad since the perplexity is the exponentiation of the entropy (a measure of uncertainty or randomness).
 
-# In[99]:
+# In[ ]:
 
 
 # Visualize the topics
@@ -704,7 +716,7 @@ vis
 
 # ## Finding topics Using optimal LDA model
 
-# In[103]:
+# In[ ]:
 
 
 optimal_model = model_list[3]
@@ -712,7 +724,7 @@ model_topics = optimal_model.show_topics(formatted=False)
 pprint(optimal_model.print_topics(num_words=10))
 
 
-# In[114]:
+# In[ ]:
 
 
 # # Compute Perplexity
@@ -724,7 +736,7 @@ coherence_lda = coherence_model_lda.get_coherence()
 print('\nCoherence Score: ', coherence_lda)
 
 
-# In[115]:
+# In[ ]:
 
 
 # Visualize the topics
@@ -735,7 +747,7 @@ vis
 
 # # Try
 
-# In[127]:
+# In[ ]:
 
 
 num_of_topics= [1,2,3,4,5,6,7,8,9,10,11,12]
@@ -759,7 +771,7 @@ def find_n_of_topics(x):
 coherence_num_of_topics = [num_of_topics.apply(lambda x: find_n_of_topics(x))]
 
 
-# In[130]:
+# In[ ]:
 
 
 num_of_topics= [1,2,3,4,5,6,7,8,9,10,11,12]
@@ -781,7 +793,7 @@ for n in num_of_topics:
                           coherence='c_v').get_coherence())
 
 
-# In[136]:
+# In[ ]:
 
 
 # Show graph
@@ -792,14 +804,14 @@ plt.legend(("coherence_values"), loc='best')
 plt.show()
 
 
-# In[132]:
+# In[ ]:
 
 
 for m, cv in zip(num_of_topics, coherence_num_of_topics):
     print("Num Topics =", m, " has Coherence Value of", round(cv, 4))
 
 
-# In[133]:
+# In[ ]:
 
 
 lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
@@ -813,7 +825,7 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                            per_word_topics=True)
 
 
-# In[134]:
+# In[ ]:
 
 
 # Print the Keyword in the 10 topics
@@ -830,7 +842,7 @@ coherence_lda = coherence_model_lda.get_coherence()
 print('\nCoherence Score: ', coherence_lda)
 
 
-# In[135]:
+# In[ ]:
 
 
 # Visualize the topics
