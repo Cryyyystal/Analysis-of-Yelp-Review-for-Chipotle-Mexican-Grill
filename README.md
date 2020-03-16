@@ -4,6 +4,12 @@
 
 In this project, I aim to apply several natural language processing tools to analyze reviews of Chipotle Mexican Grill on Yelp from 2005 to 2018 to discover improvement rooms and propose suggestions for Chipotle. 
 
+**Database**
+
+I merge the “business” table and the “review” table in Yelp Challenge Dataset, and extract Chipotle’s information. There are 9590 reviews of Chipotle in total.
+
+Yelp Challenge Dataset is an open source dataset so that you can easily follow my analysis procedure if you are interested. The link is here: https://www.yelp.com/dataset/challenge
+
 **Structure**
 
 Exploratory Data Analysis
