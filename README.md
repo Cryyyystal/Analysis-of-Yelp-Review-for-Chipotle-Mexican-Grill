@@ -32,6 +32,6 @@ To provide customers with better experience, I recommend to Chipotle in the area
 - Investigate the current quality of its most important product, burrito, which has gone fewer and fewer positive reviews. 
 - Improve online ordering system and mobile app, in order to better solve the wait time problem and improve customers’ buying experience.
 
-*If you are intereted about the detailed analyzing process, please visit: https://medium.com/@crystalwong_11198/yelp-review-analysis-for-chipotle-with-sentiment-analysis-word-clouds-and-topic-modeling-5e61a482e17e*
+If you are intereted about the detailed analyzing process, please visit: https://medium.com/@crystalwong_11198/yelp-review-analysis-for-chipotle-with-sentiment-analysis-word-clouds-and-topic-modeling-5e61a482e17e
 
 
