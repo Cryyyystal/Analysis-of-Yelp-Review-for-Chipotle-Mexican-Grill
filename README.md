@@ -4,11 +4,11 @@
 
 In this project, I aim to apply several natural language processing tools to analyze reviews of Chipotle Mexican Grill on Yelp from 2005 to 2018 to discover improvement rooms and propose suggestions for Chipotle. 
 
-**Database**
+**Data Resource**
 
 I merge the “business” table and the “review” table in Yelp Challenge Dataset, and extract Chipotle’s information. There are 9590 reviews of Chipotle in total.
 
-Yelp Challenge Dataset is an open source dataset so that you can easily follow my analysis procedure if you are interested. The link is here: https://www.yelp.com/dataset/challenge
+Yelp Challenge Dataset is an open source dataset so that you can easily follow my analysis procedure if you are interested. The data resource link is here: https://www.yelp.com/dataset/challenge
 
 **Structure**
 
@@ -31,5 +31,7 @@ To provide customers with better experience, I recommend to Chipotle in the area
 - Investigate the supply chain to see how to improve the quality and taste of its proteins, especially chicken.
 - Investigate the current quality of its most important product, burrito, which has gone fewer and fewer positive reviews. 
 - Improve online ordering system and mobile app, in order to better solve the wait time problem and improve customers’ buying experience.
+
+*If you are intereted about the detailed analyzing process, please visit: https://medium.com/@crystalwong_11198/yelp-review-analysis-for-chipotle-with-sentiment-analysis-word-clouds-and-topic-modeling-5e61a482e17e*
 
 
